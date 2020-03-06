@@ -1,0 +1,25 @@
+{
+  "name": "web-locks",
+  "version": "0.0.1",
+  "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
+  "description": "Web Locks API",
+  "license": "MIT",
+  "keywords": [
+    "web locks",
+    "locking",
+    "parallel programming"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/metarhia/web-locks"
+  },
+  "bugs": {
+    "url": "https://github.com/metarhia/web-locks/issues",
+    "email": "timur.shemsedinov@gmail.com"
+  },
+  "main": "./web-locks.js",
+  "engines": {
+    "node": ">=10.5.0"
+  },
+  "readmeFilename": "README.md"
+}
