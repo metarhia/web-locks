@@ -24,7 +24,7 @@
   "readmeFilename": "README.md",
   "scripts": {
     "lint": "eslint . && prettier -c \"**/*.js\"",
-    "test": "npm run -s lint"
+    "test": "npm run -s lint && node tests.js"
   },
   "devDependencies": {
     "eslint": "^6.5.1",
