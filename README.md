@@ -1,15 +1,15 @@
-# Web Locks API
+# Web Locks API [![travis](https://travis-ci.org/metarhia/web-locks.svg?branch=master)](https://travis-ci.org/metarhia/) [![npm version](https://img.shields.io/npm/v/web-locks.svg?style=flat)](https://www.npmjs.com/package/web-locks) [![npm downloads/month](https://img.shields.io/npm/dm/web-locks.svg)](https://www.npmjs.com/package/web-locks) [![npm downloads](https://img.shields.io/npm/dt/web-locks.svg)](https://www.npmjs.com/package/web-locks) [![license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/metarhia/web-locks/blob/master/LICENSE)
 
-[![TravisCI](https://travis-ci.org/metarhia/web-locks.svg?branch=master)](https://travis-ci.org/metarhia/)
-[![NPM Version](https://badge.fury.io/js/web-locks.svg)](https://badge.fury.io/js/web-locks)
-[![NPM Downloads/Month](https://img.shields.io/npm/dm/web-locks.svg)](https://www.npmjs.com/package/web-locks)
-[![NPM Downloads](https://img.shields.io/npm/dt/web-locks.svg)](https://www.npmjs.com/package/web-locks)
+[Web Locks API](https://developer.mozilla.org/en-US/docs/Web/API/Lock)
+implementation for [Node.js](https://nodejs.org/en/) based on
+[`worker_threads`](https://nodejs.org/api/worker_threads.html),
+[`Atomics`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics),
+[`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer),
+[asynchronous functions](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function),
+and [queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)).
 
-Web Locks API implementation for Node.js based on `worker_threads`, `Atomics`,
-`SharedArrayBuffer`, asynchronous functions, and queue.
-
-See specification: https://wicg.github.io/web-locks/
-and documentation: https://developer.mozilla.org/en-US/docs/Web/API/Lock
+See specification: [wicg.github.io/web-locks/](https://wicg.github.io/web-locks/)
+and documentation: [developer.mozilla.org/en-US/docs/Web/API/Lock](https://developer.mozilla.org/en-US/docs/Web/API/Lock)
 
 ## Installation
 
