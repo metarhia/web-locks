@@ -11,6 +11,20 @@ and [queue](https://en.wikipedia.org/wiki/Queue_(abstract_data_type)).
 See specification: [wicg.github.io/web-locks/](https://wicg.github.io/web-locks/)
 and documentation: [developer.mozilla.org/en-US/docs/Web/API/Lock](https://developer.mozilla.org/en-US/docs/Web/API/Lock)
 
+This implementation is a part of [Metarhia](https://github.com/metarhia/)
+technology stack, needed for the first pilot project of Node.js application
+server based on parallel programming and workload micro-isolation. Web Locks
+API is intended to be merged into Node.js in future.
+
+## Features
+
+* Simplest parallel programming primitive to solve a problem of data races and
+race conditions.
+* Node.js and [`worker_threads`](https://nodejs.org/api/worker_threads.html)
+support.
+* Different optimized implementations for certain cases: single-threaded
+asynchronous locks, multi-threaded locks with a single unifyed API.
+
 ## Installation
 
 ```bash
@@ -24,3 +38,7 @@ await locks.request('Resource name', async lock => {
   // use named resource and release it after return
 });
 ```
+
+## License
+
+This implementation of Web Locks API is [MIT licensed](./LICENSE).
