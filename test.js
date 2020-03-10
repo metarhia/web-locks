@@ -1,6 +1,6 @@
 'use strict';
 
-const tests = ['simple', 'nested', 'steps'];
+const tests = ['simple', 'nested', 'steps', 'exclusive'];
 
 (async () => {
   for (const name of tests) {
