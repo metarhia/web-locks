@@ -4,7 +4,7 @@ const assert = require('assert').strict;
 
 const { locks } = require('..');
 
-(async () => {
+module.exports = async () => {
   let lockedA = false;
   let unlockedA = false;
   let lockedB = false;
@@ -23,4 +23,4 @@ const { locks } = require('..');
   assert.strictEqual(unlockedA, true);
   assert.strictEqual(lockedB, true);
   assert.strictEqual(unlockedB, true);
-})();
+};

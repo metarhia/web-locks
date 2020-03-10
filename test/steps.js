@@ -16,23 +16,25 @@ const step = current => {
   counter++;
 };
 
-(async () => {
-  step(0);
-  await locks.request('A', async () => {
-    step(1);
-    await sleep(20);
-    step(3);
-  });
-  step(4);
-})();
+module.exports = async () => {
+  (async () => {
+    step(0);
+    await locks.request('A', async () => {
+      step(1);
+      await sleep(20);
+      step(3);
+    });
+    step(4);
+  })();
 
-(async () => {
-  await sleep(10);
-  step(2);
-  await locks.request('A', async () => {
-    step(5);
+  (async () => {
     await sleep(10);
-    step(6);
-  });
-  step(7);
-})();
+    step(2);
+    await locks.request('A', async () => {
+      step(5);
+      await sleep(10);
+      step(6);
+    });
+    step(7);
+  })();
+};
