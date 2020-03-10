@@ -1,8 +1,11 @@
 'use strict';
 
-const tests = ['steps'];
+const tests = ['simple', 'nested', 'steps'];
 
-for (const name of tests) {
-  const fileName = `./test/${name}.js`;
-  require(fileName);
-}
+(async () => {
+  for (const name of tests) {
+    const fileName = `./test/${name}.js`;
+    const test = require(fileName);
+    await test();
+  }
+})();
