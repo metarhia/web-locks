@@ -1,6 +1,6 @@
 'use strict';
 
-const tests = ['nested', 'simple', 'steps'];
+const tests = ['steps'];
 
 for (const name of tests) {
   const fileName = `./test/${name}.js`;

@@ -95,14 +95,17 @@ class LockManager {
       await finished;
     }
 
-    let next = lock.queue.pop();
-    while (next) {
-      const [handler, resolve] = next;
-      await handler(lock);
-      resolve();
-      next = lock.queue.pop();
-    }
-    this.collection.delete(name);
+    setTimeout(async () => {
+      let next = lock.queue.pop();
+      while (next) {
+        const [handler, resolve] = next;
+        await handler(lock);
+        resolve();
+        next = lock.queue.pop();
+      }
+      this.collection.delete(name);
+    }, 0);
+
     return undefined;
   }
 
