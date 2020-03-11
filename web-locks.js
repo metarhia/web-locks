@@ -6,13 +6,16 @@ const LOCKED = 0;
 const UNLOCKED = 1;
 
 class Lock {
-  constructor(name, mode = 'exclusive') {
+  constructor(name, mode = 'exclusive', buffer = null) {
     this.name = name;
     this.mode = mode; // 'exclusive' or 'shared'
     this.queue = [];
     this.owner = false;
     this.trying = false;
-    this.flag = UNLOCKED;
+    const newResource = !buffer;
+    this.buffer = newResource ? new SharedArrayBuffer(4) : buffer;
+    this.flag = new Int32Array(this.buffer, 0, 1);
+    if (newResource) Atomics.store(this.flag, 0, UNLOCKED);
   }
 
   enter(lock) {
@@ -23,8 +26,7 @@ class Lock {
 
   tryEnter() {
     if (this.queue.length === 0) return undefined;
-    const prev = this.flag;
-    this.flag = LOCKED;
+    const prev = Atomics.exchange(this.flag, 0, LOCKED);
     if (prev === LOCKED) return undefined;
     this.owner = true;
     this.trying = false;
@@ -36,7 +38,7 @@ class Lock {
 
   leave() {
     if (!this.owner) return;
-    this.flag = UNLOCKED;
+    Atomics.store(this.flag, 0, UNLOCKED);
     this.owner = false;
     this.tryEnter();
   }
