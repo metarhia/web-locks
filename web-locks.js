@@ -1,9 +1,14 @@
 'use strict';
 
 const { EventEmitter } = require('events');
+const threads = require('worker_threads');
+const { isMainThread, parentPort } = threads;
+const isWorkerThread = !isMainThread;
 
 const LOCKED = 0;
 const UNLOCKED = 1;
+
+let locks = null; // LockManager instance
 
 class Lock {
   constructor(name, mode = 'exclusive', buffer = null) {
@@ -40,6 +45,8 @@ class Lock {
     if (!this.owner) return;
     Atomics.store(this.flag, 0, UNLOCKED);
     this.owner = false;
+    const message = { webLocks: true, kind: 'leave', name: this.name };
+    locks.send(message);
     this.tryEnter();
   }
 }
@@ -65,6 +72,12 @@ class LockManagerSnapshot {
 class LockManager {
   constructor() {
     this.collection = new Map();
+    this.workers = new Set();
+    if (isWorkerThread) {
+      parentPort.on('message', message => {
+        this.receive(message);
+      });
+    }
   }
 
   async request(name, options, callback) {
@@ -84,6 +97,9 @@ class LockManager {
     } else {
       lock = new Lock(name, mode);
       this.collection.set(name, lock);
+      const { buffer } = lock;
+      const message = { webLocks: true, kind: 'create', name, mode, buffer };
+      locks.send(message);
     }
 
     const finished = callback(lock);
@@ -115,6 +131,45 @@ class LockManager {
     const snapshot = new LockManagerSnapshot();
     return Promise.resolve(snapshot);
   }
+
+  attach(worker) {
+    this.workers.add(worker);
+    worker.on('message', message => {
+      for (const peer of this.workers) {
+        if (peer !== worker) {
+          peer.postMessage(message);
+        }
+      }
+      this.receive(message);
+    });
+  }
+
+  send(message) {
+    if (isWorkerThread) {
+      parentPort.postMessage(message);
+      return;
+    }
+    for (const worker of this.workers) {
+      worker.postMessage(message);
+    }
+  }
+
+  receive(message) {
+    if (!message.webLocks) return;
+    const { kind, name, mode, buffer } = message;
+    if (kind === 'create') {
+      const lock = new Lock(name, mode, buffer);
+      this.collection.set(name, lock);
+      return;
+    }
+    if (kind === 'leave') {
+      for (const lock of this.collection) {
+        if (lock.name === name && lock.trying) {
+          lock.tryEnter();
+        }
+      }
+    }
+  }
 }
 
 class AbortError extends Error {
@@ -145,6 +200,6 @@ class AbortController {
   }
 }
 
-const locks = new LockManager();
+locks = new LockManager();
 
 module.exports = { locks, AbortController };
