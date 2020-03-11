@@ -17,16 +17,17 @@ class Lock {
     this.queue = [];
     this.owner = false;
     this.trying = false;
-    const newResource = !buffer;
-    this.buffer = newResource ? new SharedArrayBuffer(4) : buffer;
+    this.buffer = buffer ? buffer : new SharedArrayBuffer(4);
     this.flag = new Int32Array(this.buffer, 0, 1);
-    if (newResource) Atomics.store(this.flag, 0, UNLOCKED);
+    if (!buffer) Atomics.store(this.flag, 0, UNLOCKED);
   }
 
-  enter(lock) {
-    this.queue.push(lock);
-    this.trying = true;
-    return this.tryEnter();
+  enter(handler) {
+    return new Promise(resolve => {
+      this.queue.push({ handler, resolve });
+      this.trying = true;
+      this.tryEnter();
+    });
   }
 
   tryEnter() {
@@ -35,10 +36,8 @@ class Lock {
     if (prev === LOCKED) return undefined;
     this.owner = true;
     this.trying = false;
-    const lock = this.queue.shift();
-    return lock.callback(lock).finally(() => {
-      this.leave();
-    });
+    const next = this.queue.shift();
+    return next.handler(this);
   }
 
   leave() {
@@ -80,9 +79,9 @@ class LockManager {
     }
   }
 
-  async request(name, options, callback) {
+  async request(name, options, handler) {
     if (typeof options === 'function') {
-      callback = options;
+      handler = options;
       options = {};
     }
     const { mode = 'exclusive', signal = null } = options;
@@ -90,9 +89,7 @@ class LockManager {
     let lock = this.collection.get(name);
     if (lock) {
       if (mode === 'exclusive') {
-        return new Promise(resolve => {
-          lock.queue.push([callback, resolve]);
-        });
+        return lock.enter(handler);
       }
     } else {
       lock = new Lock(name, mode);
@@ -102,7 +99,7 @@ class LockManager {
       locks.send(message);
     }
 
-    const finished = callback(lock);
+    const finished = handler(lock);
     let aborted = null;
     if (signal) {
       aborted = new Promise((resolve, reject) => {
@@ -112,11 +109,12 @@ class LockManager {
     } else {
       await finished;
     }
+    lock.leave();
 
     setTimeout(async () => {
       let next = lock.queue.pop();
       while (next) {
-        const [handler, resolve] = next;
+        const { handler, resolve } = next;
         await handler(lock);
         resolve();
         next = lock.queue.pop();
@@ -163,7 +161,7 @@ class LockManager {
       return;
     }
     if (kind === 'leave') {
-      for (const lock of this.collection) {
+      for (const lock of this.collection.values()) {
         if (lock.name === name && lock.trying) {
           lock.tryEnter();
         }
