@@ -87,11 +87,7 @@ class LockManager {
     const { mode = 'exclusive', signal = null } = options;
 
     let lock = this.collection.get(name);
-    if (lock) {
-      if (mode === 'exclusive') {
-        return lock.enter(handler);
-      }
-    } else {
+    if (!lock) {
       lock = new Lock(name, mode);
       this.collection.set(name, lock);
       const { buffer } = lock;
@@ -99,7 +95,7 @@ class LockManager {
       locks.send(message);
     }
 
-    const finished = handler(lock);
+    const finished = lock.enter(handler);
     let aborted = null;
     if (signal) {
       aborted = new Promise((resolve, reject) => {
@@ -109,17 +105,9 @@ class LockManager {
     } else {
       await finished;
     }
-    lock.leave();
 
-    setTimeout(async () => {
-      let next = lock.queue.pop();
-      while (next) {
-        const { handler, resolve } = next;
-        await handler(lock);
-        resolve();
-        next = lock.queue.pop();
-      }
-      this.collection.delete(name);
+    setTimeout(() => {
+      lock.tryEnter();
     }, 0);
 
     return undefined;
