@@ -31,13 +31,16 @@ class Lock {
   }
 
   tryEnter() {
-    if (this.queue.length === 0) return undefined;
+    if (this.queue.length === 0) return;
     const prev = Atomics.exchange(this.flag, 0, LOCKED);
-    if (prev === LOCKED) return undefined;
+    if (prev === LOCKED) return;
     this.owner = true;
     this.trying = false;
-    const next = this.queue.shift();
-    return next.handler(this);
+    const { handler, resolve } = this.queue.shift();
+    handler(this).finally(() => {
+      this.leave();
+      resolve();
+    });
   }
 
   leave() {
