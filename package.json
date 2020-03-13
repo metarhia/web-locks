@@ -1,6 +1,6 @@
 {
   "name": "web-locks",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Web Locks API",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "url": "https://github.com/metarhia/web-locks/issues",
     "email": "timur.shemsedinov@gmail.com"
   },
-  "main": "./web-locks.js",
+  "main": "web-locks.js",
   "files": [],
   "engines": {
     "node": ">=11.0.0"
