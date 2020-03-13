@@ -1,6 +1,6 @@
 {
   "name": "web-locks",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Web Locks API",
   "license": "MIT",
@@ -18,8 +18,9 @@
     "email": "timur.shemsedinov@gmail.com"
   },
   "main": "./web-locks.js",
+  "files": [],
   "engines": {
-    "node": ">=10.5.0"
+    "node": ">=11.0.0"
   },
   "readmeFilename": "README.md",
   "scripts": {
