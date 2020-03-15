@@ -39,6 +39,8 @@ await locks.request('Resource name', async lock => {
 });
 ```
 
+More examples [here](./examples/README.md)
+
 ## License
 
 This implementation of Web Locks API is [MIT licensed](./LICENSE).
