@@ -14,18 +14,18 @@ module.exports = async () =>
     let flag4 = false;
 
     (async () => {
-      await locks.request('A', async () => {
+      await locks.request('C', async () => {
         flag1 = true;
-        await locks.request('B', async () => {
+        await locks.request('D', async () => {
           flag2 = true;
         });
       });
     })();
 
     (async () => {
-      await locks.request('B', async () => {
+      await locks.request('D', async () => {
         flag3 = true;
-        await locks.request('A', async () => {
+        await locks.request('C', async () => {
           flag4 = true;
         });
       });
