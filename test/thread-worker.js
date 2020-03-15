@@ -1,13 +1,9 @@
 'use strict';
 
 const threads = require('worker_threads');
+const { sleep } = require('./test-utils');
 
 const { locks } = require('..');
-
-const sleep = msec =>
-  new Promise(resolve => {
-    setTimeout(resolve, msec);
-  });
 
 (async () => {
   if (threads.threadId === 2) {

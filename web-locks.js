@@ -11,12 +11,13 @@ const UNLOCKED = 1;
 let locks = null; // LockManager instance
 
 class Lock {
-  constructor(name, mode = 'exclusive', buffer = null) {
+  constructor({ name, mode = 'exclusive', buffer = null, timeout = null }) {
     this.name = name;
     this.mode = mode; // 'exclusive' or 'shared'
     this.queue = [];
     this.owner = false;
     this.trying = false;
+    this.timeout = timeout;
     this.buffer = buffer ? buffer : new SharedArrayBuffer(4);
     this.flag = new Int32Array(this.buffer, 0, 1);
     if (!buffer) Atomics.store(this.flag, 0, UNLOCKED);
@@ -39,10 +40,16 @@ class Lock {
     this.owner = true;
     this.trying = false;
     const { handler, resolve } = this.queue.shift();
-    handler(this).finally(() => {
+
+    const endWork = () => {
       this.leave();
       resolve();
-    });
+    };
+
+    if (typeof this.timeout === 'number') {
+      setTimeout(endWork, this.timeout);
+    }
+    handler(this).finally(endWork);
   }
 
   leave() {
@@ -89,11 +96,11 @@ class LockManager {
       handler = options;
       options = {};
     }
-    const { mode = 'exclusive', signal = null } = options;
+    const { mode = 'exclusive', signal = null, timeout } = options;
 
     let lock = this.collection.get(name);
     if (!lock) {
-      lock = new Lock(name, mode);
+      lock = new Lock({ name, mode, timeout });
       this.collection.set(name, lock);
       const { buffer } = lock;
       const message = { webLocks: true, kind: 'create', name, mode, buffer };
@@ -147,9 +154,9 @@ class LockManager {
 
   receive(message) {
     if (!message.webLocks) return;
-    const { kind, name, mode, buffer } = message;
+    const { kind, name, mode, buffer, timeout } = message;
     if (kind === 'create') {
-      const lock = new Lock(name, mode, buffer);
+      const lock = new Lock({ name, mode, buffer, timeout });
       this.collection.set(name, lock);
       return;
     }
