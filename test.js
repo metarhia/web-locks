@@ -6,6 +6,7 @@ const tests = [
   'steps',
   'exclusive',
   'deadlock',
+  'recursive-deadlock',
   'thread-main',
 ];
 
