@@ -26,7 +26,9 @@ class Lock {
     return new Promise(resolve => {
       this.queue.push({ handler, resolve });
       this.trying = true;
-      this.tryEnter();
+      setTimeout(() => {
+        this.tryEnter();
+      }, 0);
     });
   }
 
