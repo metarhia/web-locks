@@ -3,7 +3,7 @@
 const threads = require('worker_threads');
 const { locks } = require('../../');
 
-const SLEEPING_TIME_MS = 1000
+const SLEEPING_TIME_MS = 1000;
 
 const sleep = () =>
   new Promise(resolve => {
