@@ -2,17 +2,30 @@
 
 const assert = require('assert').strict;
 const { locks } = require('..');
-const { sleep } = require('./test-utils');
-
-const TIME_TO_PROCESS = 200;
-const TIME_TO_LOCK = 100;
+const { sleep } = require('./test-utils.js');
 
 module.exports = async () => {
-  const startTs = Date.now();
+  await (async () => {
+    const caseName = 'Should release a resource after timeout deadline';
+    const startTs = Date.now();
 
-  await locks.request('LockTime', { timeout: TIME_TO_LOCK }, async () => {
-    await sleep(TIME_TO_PROCESS);
-  });
+    await locks.request('LockTime', { timeout: 100 }, async () => {
+      await sleep(200);
+    });
 
-  assert.strictEqual(Date.now() - startTs < TIME_TO_PROCESS, true);
+    const isCaseSuccess = Date.now() - startTs < 200;
+    assert.strictEqual(isCaseSuccess, true, caseName);
+  })();
+
+  await (async () => {
+    const caseName = 'Should release a resource after handler complete a task';
+    const startTs = Date.now();
+
+    await locks.request('LockTime', { timeout: 200 }, async () => {
+      await sleep(100);
+    });
+
+    const isCaseSuccess = Date.now() - startTs < 200;
+    assert.strictEqual(isCaseSuccess, true, caseName);
+  })();
 };

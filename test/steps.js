@@ -2,7 +2,7 @@
 
 const assert = require('assert').strict;
 const { locks } = require('..');
-const { sleep } = require('./test-utils');
+const { sleep } = require('./test-utils.js');
 
 let counter = 0;
 

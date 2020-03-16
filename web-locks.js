@@ -38,17 +38,22 @@ class Lock {
     if (prev === LOCKED) return;
     this.owner = true;
     this.trying = false;
+    let timer;
+
     const { handler, resolve, timeout } = this.queue.shift();
 
-    const endWork = () => {
+    const finalize = () => {
       this.leave();
+      if (timer !== undefined) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
       resolve();
     };
 
-    if (timeout) {
-      setTimeout(endWork, timeout);
-    }
-    handler(this).finally(endWork);
+    if (timeout) timer = setTimeout(finalize, timeout);
+
+    handler(this).finally(finalize);
   }
 
   leave() {

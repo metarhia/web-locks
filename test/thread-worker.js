@@ -1,7 +1,7 @@
 'use strict';
 
 const threads = require('worker_threads');
-const { sleep } = require('./test-utils');
+const { sleep } = require('./test-utils.js');
 
 const { locks } = require('..');
 
