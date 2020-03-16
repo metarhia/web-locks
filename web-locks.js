@@ -23,9 +23,9 @@ class Lock {
     if (!buffer) Atomics.store(this.flag, 0, UNLOCKED);
   }
 
-  enter(handler, timeout) {
-    return new Promise(resolve => {
-      this.queue.push({ handler, resolve, timeout });
+  enter(handler, timeout, signal) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ handler, resolve, reject, timeout, signal });
       this.trying = true;
       setTimeout(() => {
         this.tryEnter();
@@ -41,18 +41,21 @@ class Lock {
     this.trying = false;
     let timer;
 
-    const { handler, resolve, timeout } = this.queue.shift();
+    const { handler, resolve, reject, timeout, signal } = this.queue.shift();
 
-    const finalize = () => {
+    const finalize = error => {
       this.leave();
       if (timer !== undefined) {
         clearTimeout(timer);
         timer = undefined;
       }
-      resolve();
+      if (error) reject(error);
+      else resolve();
     };
 
-    if (timeout) timer = setTimeout(finalize, timeout);
+    if (signal) signal.on('abort', finalize);
+    if (timeout)
+      timer = setTimeout(finalize, timeout, new TimeoutError('Time Out'));
 
     handler(this).finally(finalize);
   }
@@ -112,16 +115,9 @@ class LockManager {
       locks.send(message);
     }
 
-    const finished = lock.enter(handler, timeout);
-    let aborted = null;
-    if (signal) {
-      aborted = new Promise((resolve, reject) => {
-        signal.on('abort', reject);
-      });
-      await Promise.race([finished, aborted]);
-    } else {
-      await finished;
-    }
+    const finished = lock.enter(handler, timeout, signal);
+
+    await finished;
 
     setTimeout(() => {
       lock.tryEnter();
