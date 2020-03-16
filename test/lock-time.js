@@ -4,7 +4,7 @@ const assert = require('assert').strict;
 const { locks } = require('..');
 const { sleep } = require('./test-utils');
 
-const TIME_TO_PROCESS = 2000;
+const TIME_TO_PROCESS = 200;
 const TIME_TO_LOCK = 100;
 
 module.exports = async () => {

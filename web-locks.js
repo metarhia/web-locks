@@ -11,21 +11,20 @@ const UNLOCKED = 1;
 let locks = null; // LockManager instance
 
 class Lock {
-  constructor({ name, mode = 'exclusive', buffer = null, timeout = null }) {
+  constructor(name, mode = 'exclusive', buffer = null) {
     this.name = name;
     this.mode = mode; // 'exclusive' or 'shared'
     this.queue = [];
     this.owner = false;
     this.trying = false;
-    this.timeout = timeout;
     this.buffer = buffer ? buffer : new SharedArrayBuffer(4);
     this.flag = new Int32Array(this.buffer, 0, 1);
     if (!buffer) Atomics.store(this.flag, 0, UNLOCKED);
   }
 
-  enter(handler) {
+  enter(handler, timeout) {
     return new Promise(resolve => {
-      this.queue.push({ handler, resolve });
+      this.queue.push({ handler, resolve, timeout });
       this.trying = true;
       setTimeout(() => {
         this.tryEnter();
@@ -39,15 +38,15 @@ class Lock {
     if (prev === LOCKED) return;
     this.owner = true;
     this.trying = false;
-    const { handler, resolve } = this.queue.shift();
+    const { handler, resolve, timeout } = this.queue.shift();
 
     const endWork = () => {
       this.leave();
       resolve();
     };
 
-    if (typeof this.timeout === 'number') {
-      setTimeout(endWork, this.timeout);
+    if (timeout) {
+      setTimeout(endWork, timeout);
     }
     handler(this).finally(endWork);
   }
@@ -100,14 +99,14 @@ class LockManager {
 
     let lock = this.collection.get(name);
     if (!lock) {
-      lock = new Lock({ name, mode, timeout });
+      lock = new Lock(name, mode);
       this.collection.set(name, lock);
       const { buffer } = lock;
       const message = { webLocks: true, kind: 'create', name, mode, buffer };
       locks.send(message);
     }
 
-    const finished = lock.enter(handler);
+    const finished = lock.enter(handler, timeout);
     let aborted = null;
     if (signal) {
       aborted = new Promise((resolve, reject) => {
@@ -154,9 +153,9 @@ class LockManager {
 
   receive(message) {
     if (!message.webLocks) return;
-    const { kind, name, mode, buffer, timeout } = message;
+    const { kind, name, mode, buffer } = message;
     if (kind === 'create') {
-      const lock = new Lock({ name, mode, buffer, timeout });
+      const lock = new Lock(name, mode, buffer);
       this.collection.set(name, lock);
       return;
     }
