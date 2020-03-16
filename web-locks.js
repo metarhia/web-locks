@@ -2,6 +2,7 @@
 
 const { EventEmitter } = require('events');
 const threads = require('worker_threads');
+const { AbortError, TimeoutError } = require('./errors');
 const { isMainThread, parentPort } = threads;
 const isWorkerThread = !isMainThread;
 
@@ -171,13 +172,6 @@ class LockManager {
         }
       }
     }
-  }
-}
-
-class AbortError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'AbortError';
   }
 }
 
