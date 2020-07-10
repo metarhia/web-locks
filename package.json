@@ -56,11 +56,11 @@
     "test": "npm run -s lint && node test.js"
   },
   "devDependencies": {
-    "eslint": "^6.5.1",
+    "eslint": "^7.4.0",
     "eslint-config-metarhia": "^7.0.0",
     "eslint-config-prettier": "^6.9.0",
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^1.19.1"
+    "prettier": "^2.0.5"
   }
 }
