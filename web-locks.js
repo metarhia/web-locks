@@ -10,6 +10,16 @@ const UNLOCKED = 1;
 
 let locks = null; // LockManager instance
 
+const addTimeout = (func, timeout) => {
+  return async () => {
+    const timedOut = new Promise(resolve => {
+      setTimeout(resolve, timeout);
+    });
+
+    await Promise.race([func(), timedOut]);
+  };
+};
+
 class Lock {
   constructor(name, mode = 'exclusive', buffer = null) {
     this.name = name;
@@ -89,7 +99,8 @@ class LockManager {
       handler = options;
       options = {};
     }
-    const { mode = 'exclusive', signal = null } = options;
+    const { mode = 'exclusive', signal = null, timeout } = options;
+    if (timeout) handler = addTimeout(handler, timeout);
 
     let lock = this.collection.get(name);
     if (!lock) {
