@@ -11,12 +11,12 @@ const UNLOCKED = 1;
 let locks = null; // LockManager instance
 
 const addTimeout = (func, timeout) => {
-  return async () => {
+  return async (...args) => {
     const timedOut = new Promise(resolve => {
       setTimeout(resolve, timeout);
     });
 
-    await Promise.race([func(), timedOut]);
+    await Promise.race([func(...args), timedOut]);
   };
 };
 
