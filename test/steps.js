@@ -2,13 +2,7 @@
 
 const assert = require('assert').strict;
 const { locks } = require('..');
-
-const sleep = msec =>
-  new Promise(resolve => {
-    setTimeout(() => {
-      resolve();
-    }, msec);
-  });
+const { sleep } = require('./test-utils.js');
 
 let counter = 0;
 

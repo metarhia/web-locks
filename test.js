@@ -8,6 +8,7 @@ const tests = [
   'deadlock',
   'recursive-deadlock',
   'thread-main',
+  'lock-time',
 ];
 
 (async () => {

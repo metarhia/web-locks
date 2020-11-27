@@ -2,6 +2,7 @@
 
 const { EventEmitter } = require('events');
 const threads = require('worker_threads');
+const { AbortError, TimeoutError } = require('./errors');
 const { isMainThread, parentPort } = threads;
 const isWorkerThread = !isMainThread;
 
@@ -22,9 +23,9 @@ class Lock {
     if (!buffer) Atomics.store(this.flag, 0, UNLOCKED);
   }
 
-  enter(handler) {
-    return new Promise(resolve => {
-      this.queue.push({ handler, resolve });
+  enter(handler, timeout, signal) {
+    return new Promise((resolve, reject) => {
+      this.queue.push({ handler, resolve, reject, timeout, signal });
       this.trying = true;
       setTimeout(() => {
         this.tryEnter();
@@ -38,11 +39,25 @@ class Lock {
     if (prev === LOCKED) return;
     this.owner = true;
     this.trying = false;
-    const { handler, resolve } = this.queue.shift();
-    handler(this).finally(() => {
+    let timer;
+
+    const { handler, resolve, reject, timeout, signal } = this.queue.shift();
+
+    const finalize = error => {
       this.leave();
-      resolve();
-    });
+      if (timer !== undefined) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      if (error) reject(error);
+      else resolve();
+    };
+
+    if (signal) signal.on('abort', finalize);
+    if (timeout)
+      timer = setTimeout(finalize, timeout, new TimeoutError('Time Out'));
+
+    handler(this).finally(finalize);
   }
 
   leave() {
@@ -89,7 +104,7 @@ class LockManager {
       handler = options;
       options = {};
     }
-    const { mode = 'exclusive', signal = null } = options;
+    const { mode = 'exclusive', signal = null, timeout } = options;
 
     let lock = this.collection.get(name);
     if (!lock) {
@@ -100,16 +115,9 @@ class LockManager {
       locks.send(message);
     }
 
-    const finished = lock.enter(handler);
-    let aborted = null;
-    if (signal) {
-      aborted = new Promise((resolve, reject) => {
-        signal.on('abort', reject);
-      });
-      await Promise.race([finished, aborted]);
-    } else {
-      await finished;
-    }
+    const finished = lock.enter(handler, timeout, signal);
+
+    await finished;
 
     setTimeout(() => {
       lock.tryEnter();
@@ -160,13 +168,6 @@ class LockManager {
         }
       }
     }
-  }
-}
-
-class AbortError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'AbortError';
   }
 }
 
