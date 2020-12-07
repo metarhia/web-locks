@@ -7,7 +7,7 @@ const { locks } = require('..');
 module.exports = async () => {
   let locked = false;
   let unlocked = false;
-  await locks.request('A', async lock => {
+  await locks.request('A', async (lock) => {
     assert.ok(lock);
     locked = true;
     assert.strictEqual(unlocked, false);

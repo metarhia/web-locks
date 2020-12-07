@@ -6,7 +6,7 @@ const { locks } = require('..');
 const TEST_TIMEOUT = 1000;
 
 module.exports = () =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     const workerFile = './test/thread-worker.js';
 
     const worker1 = new threads.Worker(workerFile);
@@ -16,7 +16,7 @@ module.exports = () =>
     locks.attach(worker2);
 
     let counter = 0;
-    const done = message => {
+    const done = (message) => {
       if (message.status === 'done') {
         counter++;
         if (counter === 2) resolve();

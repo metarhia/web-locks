@@ -3,8 +3,8 @@
 const assert = require('assert').strict;
 const { locks } = require('..');
 
-const sleep = msec =>
-  new Promise(resolve => {
+const sleep = (msec) =>
+  new Promise((resolve) => {
     setTimeout(() => {
       resolve();
     }, msec);
@@ -12,13 +12,13 @@ const sleep = msec =>
 
 let counter = 0;
 
-const step = current => {
+const step = (current) => {
   assert.strictEqual(counter, current);
   counter++;
 };
 
 module.exports = () =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     (async () => {
       step(0);
       await locks.request('A', async () => {

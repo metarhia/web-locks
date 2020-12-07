@@ -7,7 +7,7 @@ const { locks } = require('..');
 const TEST_TIMEOUT = 100;
 
 module.exports = async () =>
-  new Promise(resolve => {
+  new Promise((resolve) => {
     let flag1 = false;
     let flag2 = false;
     let flag3 = false;
