@@ -23,7 +23,7 @@ class Lock {
   }
 
   enter(handler) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       this.queue.push({ handler, resolve });
       this.trying = true;
       setTimeout(() => {
@@ -78,7 +78,7 @@ class LockManager {
     this.collection = new Map();
     this.workers = new Set();
     if (isWorkerThread) {
-      parentPort.on('message', message => {
+      parentPort.on('message', (message) => {
         this.receive(message);
       });
     }
@@ -125,7 +125,7 @@ class LockManager {
 
   attach(worker) {
     this.workers.add(worker);
-    worker.on('message', message => {
+    worker.on('message', (message) => {
       for (const peer of this.workers) {
         if (peer !== worker) {
           peer.postMessage(message);
