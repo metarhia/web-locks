@@ -1,6 +1,6 @@
 {
   "name": "web-locks",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "author": "Timur Shemsedinov <timur.shemsedinov@gmail.com>",
   "description": "Web Locks API",
   "license": "MIT",
