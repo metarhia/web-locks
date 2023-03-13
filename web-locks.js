@@ -11,8 +11,6 @@ const UNLOCKED = 1;
 
 let locks = null; // LockManager instance
 
-const testQeueue = new Queue();
-
 class Lock {
   constructor(name, mode = 'exclusive', buffer = null) {
     this.name = name;
