@@ -1,6 +1,7 @@
 'use strict';
 
 const { EventEmitter } = require('events');
+const Queue = require('./lib/queue');
 const threads = require('worker_threads');
 const { isMainThread, parentPort } = threads;
 const isWorkerThread = !isMainThread;
@@ -10,11 +11,13 @@ const UNLOCKED = 1;
 
 let locks = null; // LockManager instance
 
+const testQeueue = new Queue();
+
 class Lock {
   constructor(name, mode = 'exclusive', buffer = null) {
     this.name = name;
     this.mode = mode; // 'exclusive' or 'shared'
-    this.queue = [];
+    this.queue = new Queue();
     this.owner = false;
     this.trying = false;
     this.buffer = buffer ? buffer : new SharedArrayBuffer(4);
@@ -57,8 +60,8 @@ class Lock {
 
 class LockManagerSnapshot {
   constructor(resources) {
-    const held = [];
-    const pending = [];
+    const held = new Queue();
+    const pending = new Queue();
     this.held = held;
     this.pending = pending;
 
