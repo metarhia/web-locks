@@ -4,15 +4,15 @@ const assert = require('node:assert/strict');
 const { performance } = require('node:perf_hooks');
 const Queue = require('../lib/queue');
 
-const simpleQueueBench = (queueClass) => {
-  const queue = new queueClass();
+const simpleQueueBench = (QueueClass) => {
+  const queue = new QueueClass();
   let sum = 0;
 
   const timeStart = performance.now();
-  for (let i = 0; i < 100_000; i++) {
+  for (let i = 0; i < 100000; i++) {
     queue.push(() => i);
   }
-  for (let i = 0; i < 100_000; i++) {
+  for (let i = 0; i < 100000; i++) {
     sum += queue.shift()();
   }
   const timeEnd = performance.now();
