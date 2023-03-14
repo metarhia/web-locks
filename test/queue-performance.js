@@ -22,8 +22,6 @@ const simpleQueueBench = (QueueClass) => {
   return { sum, execTime };
 };
 
-const percentDifference = (n1, n2) => (Math.abs(n1) / n2);
-
 module.exports = async () => {
   const testedClasses = [Array, Queue];
 
@@ -31,11 +29,6 @@ module.exports = async () => {
   const { sum: arraySum, execTime: arrayExecTime } = arrayResult;
   const { sum: queueSum, execTime: queueExecTime } = queueResult;
 
-  console.log({
-    improveRate: percentDifference(arrayExecTime, queueExecTime),
-    arrayExecTime,
-    queueExecTime
-  });
   const isQueueFaster = arrayExecTime > queueExecTime;
 
   assert.strictEqual(queueSum, arraySum);
