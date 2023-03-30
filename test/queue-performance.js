@@ -2,7 +2,7 @@
 
 const assert = require('node:assert/strict');
 const { performance } = require('node:perf_hooks');
-const Queue = require('../lib/queue');
+const Queue = require('../lib/queue.js');
 
 const simpleQueueBench = (QueueClass) => {
   const queue = new QueueClass();
