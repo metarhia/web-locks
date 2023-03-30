@@ -1,7 +1,7 @@
 'use strict';
 
 const { EventEmitter } = require('events');
-const Queue = require('./lib/queue');
+const Queue = require('./lib/queue.js');
 const threads = require('worker_threads');
 const { isMainThread, parentPort } = threads;
 const isWorkerThread = !isMainThread;
