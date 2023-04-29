@@ -57,11 +57,11 @@
     "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \"**/.*rc\""
   },
   "devDependencies": {
-    "eslint": "^8.31.0",
+    "eslint": "^8.39.0",
     "eslint-config-metarhia": "^8.1.0",
-    "eslint-config-prettier": "^8.6.0",
-    "eslint-plugin-import": "^2.26.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.2"
+    "prettier": "^2.8.8"
   }
 }
