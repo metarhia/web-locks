@@ -46,7 +46,7 @@
     "email": "timur.shemsedinov@gmail.com"
   },
   "main": "web-locks.js",
-  "files": ["./lib/queue.js"],
+  "files": ["lib/queue.js"],
   "engines": {
     "node": ">=11.0.0"
   },
