@@ -23,8 +23,8 @@ class Lock {
   }
 
   enter(handler) {
-    return new Promise((resolve) => {
-      this.queue.push({ handler, resolve });
+    return new Promise((resolve, reject) => {
+      this.queue.push({ handler, resolve, reject });
       this.trying = true;
       setTimeout(() => {
         this.tryEnter();
@@ -38,11 +38,16 @@ class Lock {
     if (prev === LOCKED) return;
     this.owner = true;
     this.trying = false;
-    const { handler, resolve } = this.queue.shift();
-    handler(this).finally(() => {
-      this.leave();
-      resolve();
-    });
+    const { handler, resolve, reject } = this.queue.shift();
+    handler(this)
+      .then(() => {
+        this.leave();
+        resolve();
+      })
+      .catch((error) => {
+        this.leave();
+        reject(error);
+      });
   }
 
   leave() {

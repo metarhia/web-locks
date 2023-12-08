@@ -8,6 +8,7 @@ const tests = [
   'deadlock',
   'recursive-deadlock',
   'thread-main',
+  'handler-throw-error',
 ];
 
 (async () => {
