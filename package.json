@@ -53,7 +53,7 @@
   "readmeFilename": "README.md",
   "scripts": {
     "lint": "eslint . && prettier -c \"**/*.js\"",
-    "test": "npm run -s lint && node test.js",
+    "test": "npm run lint && node --test",
     "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \"**/.*rc\""
   },
   "devDependencies": {

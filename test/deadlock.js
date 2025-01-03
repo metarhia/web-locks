@@ -1,43 +1,71 @@
 'use strict';
 
+const test = require('node:test');
 const assert = require('assert').strict;
 
 const { locks } = require('..');
 
-const TEST_TIMEOUT = 100;
+test('Deadlock', async () => {
+  let flag1 = false;
+  let flag2 = false;
+  let flag3 = false;
+  let flag4 = false;
 
-module.exports = async () =>
-  new Promise((resolve) => {
-    let flag1 = false;
-    let flag2 = false;
-    let flag3 = false;
-    let flag4 = false;
-
-    (async () => {
-      await locks.request('C', async () => {
-        flag1 = true;
-        await locks.request('D', async () => {
-          flag2 = true;
-        });
-      });
-    })();
-
-    (async () => {
+  (async () => {
+    await locks.request('C', async () => {
+      flag1 = true;
       await locks.request('D', async () => {
-        flag3 = true;
-        await locks.request('C', async () => {
-          flag4 = true;
-        });
+        flag2 = true;
       });
-    })();
+    });
+  })();
 
-    (async () => {
-      setTimeout(() => {
-        assert.strictEqual(flag1, true);
-        assert.strictEqual(flag2, false);
-        assert.strictEqual(flag3, true);
-        assert.strictEqual(flag4, false);
-        resolve();
-      }, TEST_TIMEOUT);
-    })();
+  (async () => {
+    await locks.request('D', async () => {
+      flag3 = true;
+      await locks.request('C', async () => {
+        flag4 = true;
+      });
+    });
+  })();
+
+  let resolve = null;
+  const promise = new Promise((r) => {
+    resolve = r;
   });
+  setTimeout(() => {
+    assert.equal(flag1, true);
+    assert.equal(flag2, false);
+    assert.equal(flag3, true);
+    assert.equal(flag4, false);
+    resolve();
+  }, 100);
+
+  return promise;
+});
+
+test('Recursive deadlock', async () => {
+  let flag1 = false;
+  let flag2 = false;
+
+  (async () => {
+    await locks.request('E', async () => {
+      flag1 = true;
+      await locks.request('E', async () => {
+        flag2 = true;
+      });
+    });
+  })();
+
+  let resolve = null;
+  const promise = new Promise((r) => {
+    resolve = r;
+  });
+  setTimeout(() => {
+    assert.equal(flag1, true);
+    assert.equal(flag2, false);
+    resolve();
+  }, 100);
+
+  return promise;
+});
