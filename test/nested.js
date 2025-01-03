@@ -1,10 +1,11 @@
 'use strict';
 
+const test = require('node:test');
 const assert = require('assert').strict;
 
 const { locks } = require('..');
 
-module.exports = async () => {
+test('Exclusive lock', async () => {
   let lockedA = false;
   let unlockedA = false;
   let lockedB = false;
@@ -19,8 +20,8 @@ module.exports = async () => {
     unlockedB = true;
   });
   unlockedA = true;
-  assert.strictEqual(lockedA, true);
-  assert.strictEqual(unlockedA, true);
-  assert.strictEqual(lockedB, true);
-  assert.strictEqual(unlockedB, true);
-};
+  assert.equal(lockedA, true);
+  assert.equal(unlockedA, true);
+  assert.equal(lockedB, true);
+  assert.equal(unlockedB, true);
+});
