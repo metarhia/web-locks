@@ -52,16 +52,13 @@
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "lint": "eslint . && prettier -c \"**/*.js\"",
+    "lint": "eslint . && prettier --check \"**/*.js\" \"**/*.json\" \"**/*.md\"",
     "test": "npm run lint && node --test",
-    "fmt": "prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \"**/.*rc\""
+    "fix": "eslint . --fix && prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\""
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
-    "eslint-config-metarhia": "^8.1.0",
-    "eslint-config-prettier": "^8.10.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "prettier": "^2.8.8"
+    "eslint": "^9.9.1",
+    "eslint-config-metarhia": "^9.0.4",
+    "prettier": "^3.3.3"
   }
 }
