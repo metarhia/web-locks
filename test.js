@@ -11,11 +11,13 @@ const tests = [
   'handler-throw-error',
 ];
 
-(async () => {
+const main = async () => {
   for (const name of tests) {
     console.log(`Test: ${name}`);
     const fileName = `./test/${name}.js`;
     const test = require(fileName);
     await test();
   }
-})();
+};
+
+main();
