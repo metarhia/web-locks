@@ -11,6 +11,6 @@ module.exports = async () => {
         throw new Error('test');
       });
     },
-    { message: 'test' }
+    { message: 'test' },
   );
 };
