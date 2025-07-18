@@ -1,9 +1,11 @@
 'use strict';
 
-const { EventEmitter } = require('events');
 const threads = require('worker_threads');
 const { isMainThread, parentPort } = threads;
 const isWorkerThread = !isMainThread;
+
+const abort = global.AbortController ? global : require('./abort.js');
+const { AbortController, AbortSignal, AbortError } = abort;
 
 const LOCKED = 0;
 const UNLOCKED = 1;
@@ -168,34 +170,6 @@ class LockManager {
   }
 }
 
-class AbortError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = 'AbortError';
-  }
-}
-
-class AbortSignal extends EventEmitter {
-  constructor() {
-    super();
-    this.aborted = false;
-    this.on('abort', () => {
-      this.aborted = true;
-    });
-  }
-}
-
-class AbortController {
-  constructor() {
-    this.signal = new AbortSignal();
-  }
-
-  abort() {
-    const error = new AbortError('The request was aborted');
-    this.signal.emit('abort', error);
-  }
-}
-
 locks = new LockManager();
 
-module.exports = { locks, AbortController };
+module.exports = { locks, AbortController, AbortSignal, AbortError };
