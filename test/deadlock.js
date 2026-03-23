@@ -34,10 +34,10 @@ test('Deadlock', async () => {
     resolve = r;
   });
   setTimeout(() => {
-    assert.equal(flag1, true);
-    assert.equal(flag2, false);
-    assert.equal(flag3, true);
-    assert.equal(flag4, false);
+    assert.strictEqual(flag1, true);
+    assert.strictEqual(flag2, false);
+    assert.strictEqual(flag3, true);
+    assert.strictEqual(flag4, false);
     resolve();
   }, 100);
 
@@ -62,8 +62,8 @@ test('Recursive deadlock', async () => {
     resolve = r;
   });
   setTimeout(() => {
-    assert.equal(flag1, true);
-    assert.equal(flag2, false);
+    assert.strictEqual(flag1, true);
+    assert.strictEqual(flag2, false);
     resolve();
   }, 100);
 

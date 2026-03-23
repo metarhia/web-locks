@@ -5,10 +5,7 @@ const threads = require('node:worker_threads');
 
 const { locks } = require('..');
 
-const sleep = (msec) =>
-  new Promise((resolve) => {
-    setTimeout(resolve, msec);
-  });
+const sleep = (msec) => new Promise((r) => setTimeout(r, msec));
 
 if (threads.isMainThread) {
   const workerFile = './test/threads.js';

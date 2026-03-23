@@ -10,8 +10,8 @@ test('Exclusive lock', async () => {
   let unlocked = false;
   await locks.request('A', { mode: 'exclusive' }, async () => {
     locked = true;
-    assert.equal(unlocked, false);
+    assert.strictEqual(unlocked, false);
   });
   unlocked = true;
-  assert.equal(locked, true);
+  assert.strictEqual(locked, true);
 });

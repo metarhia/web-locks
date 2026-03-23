@@ -5,17 +5,12 @@ const assert = require('assert').strict;
 
 const { locks } = require('..');
 
-const sleep = (msec) =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      resolve();
-    }, msec);
-  });
+const sleep = (msec) => new Promise((r) => setTimeout(r, msec));
 
 let counter = 0;
 
 const step = (current) => {
-  assert.equal(counter, current);
+  assert.strictEqual(counter, current);
   counter++;
 };
 
