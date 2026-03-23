@@ -126,7 +126,7 @@ class LockManager {
   }
 
   query() {
-    const snapshot = new LockManagerSnapshot();
+    const snapshot = new LockManagerSnapshot(this.collection.values());
     return Promise.resolve(snapshot);
   }
 
