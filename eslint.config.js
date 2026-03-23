@@ -2,6 +2,7 @@
 
 const init = require('eslint-config-metarhia');
 
-init[0].rules['class-methods-use-this'] = 'off';
+const config = [...init];
+config[0].rules = { ...config[0].rules, 'class-methods-use-this': 'off' };
 
-module.exports = [...init];
+module.exports = config;
