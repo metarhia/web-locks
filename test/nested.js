@@ -10,18 +10,18 @@ test('Exclusive lock', async () => {
   let unlockedA = false;
   let lockedB = false;
   let unlockedB = false;
-  await locks.request('A', async (lock) => {
+  await locks.request('A', async (lockA) => {
     lockedA = true;
-    assert.ok(lock);
-    await locks.request('B', async (lock) => {
+    assert.ok(lockA);
+    await locks.request('B', async (lockB) => {
       lockedB = true;
-      assert.ok(lock);
+      assert.ok(lockB);
     });
     unlockedB = true;
   });
   unlockedA = true;
-  assert.equal(lockedA, true);
-  assert.equal(unlockedA, true);
-  assert.equal(lockedB, true);
-  assert.equal(unlockedB, true);
+  assert.strictEqual(lockedA, true);
+  assert.strictEqual(unlockedA, true);
+  assert.strictEqual(lockedB, true);
+  assert.strictEqual(unlockedB, true);
 });

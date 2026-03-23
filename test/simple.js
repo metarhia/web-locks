@@ -11,9 +11,9 @@ test('Exclusive lock', async () => {
   await locks.request('A', async (lock) => {
     assert.ok(lock);
     locked = true;
-    assert.equal(unlocked, false);
+    assert.strictEqual(unlocked, false);
   });
   unlocked = true;
-  assert.equal(locked, true);
-  assert.equal(unlocked, true);
+  assert.strictEqual(locked, true);
+  assert.strictEqual(unlocked, true);
 });
