@@ -22,8 +22,10 @@ API is intended to be merged into Node.js in future.
   race conditions.
 - Node.js and [`worker_threads`](https://nodejs.org/api/worker_threads.html)
   support.
-- Different optimized implementations for certain cases: single-threaded
-  asynchronous locks, multi-threaded locks with a single unifyed API.
+- Unified API for single-threaded asynchronous locks and multi-threaded locks.
+- Exclusive lock mode (default).
+- `AbortSignal` support to cancel a lock request while waiting.
+- TypeScript typings included.
 
 ## Installation
 
@@ -34,10 +36,63 @@ $ npm install web-locks
 ## Usage
 
 ```js
+const { locks, AbortController } = require('web-locks');
+
+// Exclusive lock (default)
 await locks.request('Resource name', async (lock) => {
-  // use named resource and release it after return
+  // use named resource; it is released after the callback settles
 });
+
+// Cancel a waiting request with AbortSignal
+const controller = new AbortController();
+const pending = locks.request(
+  'Resource name',
+  { signal: controller.signal },
+  async () => {
+    // critical section
+  },
+);
+controller.abort(); // rejects pending with AbortError
 ```
+
+Attach workers so locks are coordinated across threads:
+
+```js
+const { Worker } = require('worker_threads');
+const { locks } = require('web-locks');
+
+const worker = new Worker('./worker.js');
+locks.attach(worker);
+```
+
+## API
+
+### `locks.request(name, handler): Promise<undefined>`
+
+### `locks.request(name, options, handler): Promise<undefined>`
+
+- `name: string` — resource name
+- `options.mode?: 'exclusive'` — only `exclusive` is supported
+- `options.signal?: AbortSignal` — abort waiting for the lock
+- `handler: (lock: Lock) => void | Promise<void>` — runs while holding the lock
+
+Already-aborted signals reject immediately. Aborting while waiting cancels the
+queued request and rejects with `AbortError` (or `signal.reason` when set).
+
+### `locks.query(): Promise<LockManagerSnapshot>`
+
+- `held: Array<LockInfo>` — currently held locks
+- `pending: Array<LockInfo>` — queued lock requests
+
+### `locks.attach(worker): void`
+
+Registers a `worker_threads.Worker` for cross-thread lock coordination.
+
+### Exports
+
+- `locks: LockManager`
+- `AbortController`, `AbortSignal`, `AbortError` — native when available,
+  otherwise a small polyfill
 
 ## License
 
