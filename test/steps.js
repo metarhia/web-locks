@@ -1,8 +1,8 @@
 'use strict';
 
 const test = require('node:test');
-const assert = require('assert').strict;
 
+const assert = require('assert').strict;
 const { locks } = require('..');
 
 const sleep = (msec) => new Promise((r) => setTimeout(r, msec));
