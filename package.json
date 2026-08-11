@@ -46,20 +46,24 @@
     "email": "timur.shemsedinov@gmail.com"
   },
   "main": "web-locks.js",
+  "types": "web-locks.d.ts",
   "files": [],
   "engines": {
     "node": ">=11.0.0"
   },
   "readmeFilename": "README.md",
   "scripts": {
-    "lint": "eslint . && prettier --check \"**/*.js\" \"**/*.json\" \"**/*.md\"",
-    "test": "npm run lint && node --test",
-    "fix": "eslint . --fix && prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\""
+    "lint": "eslint . && prettier --check \"**/*.js\" \"**/*.json\" \"**/*.md\" \"**/*.ts\"",
+    "test": "npm run lint && npm run types && node --test",
+    "types": "tsc -p tsconfig.json",
+    "fix": "eslint . --fix && prettier --write \"**/*.js\" \"**/*.json\" \"**/*.md\" \"**/*.ts\""
   },
   "devDependencies": {
+    "@types/node": "^25.9.3",
     "eslint": "^9.39.5",
     "eslint-config-metarhia": "^9.1.8",
     "metaskills": "^1.0.4",
-    "prettier": "^3.8.1"
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
   }
 }
